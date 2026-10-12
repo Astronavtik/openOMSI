@@ -1,0 +1,28 @@
+name: Build omsi-plugin-host32.exe
+
+on: [workflow_dispatch] # Это позволяет запускать сборку вручную
+
+jobs:
+  build:
+    runs-on: ubuntu-latest # Собираем на виртуальной машине с Linux
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Rust target
+        run: rustup target add i686-pc-windows-gnu # Добавляем 32-битную цель для Windows
+
+      - name: Install MinGW
+        run: sudo apt-get update && sudo apt-get install -y mingw-w64 # Устанавливаем компилятор
+
+      - name: Build
+        run: |
+          CARGO_TARGET_I686_PC_WINDOWS_GNU_LINKER=i686-w64-mingw32-gcc \
+          RUSTFLAGS="-C panic=abort -C link-arg=-Wl,--enable-stdcall-fixup" \
+          cargo build --release --target i686-pc-windows-gnu -p omsi-plugin --bin omsi-plugin-host
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: omsi-plugin-host32
+          path: target/i686-pc-windows-gnu/release/omsi-plugin-host.exe
