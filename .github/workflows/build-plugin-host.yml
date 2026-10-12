@@ -20,7 +20,7 @@ jobs:
       - name: Build omsi-plugin-host
         run: |
           CARGO_TARGET_I686_PC_WINDOWS_GNU_LINKER=i686-w64-mingw32-gcc \
-          RUSTFLAGS="-C panic=abort -C link-arg=-Wl,--enable-stdcall-fixup" \
+          RUSTFLAGS="-C panic=abort -C link-arg=-Wl,--enable-stdcall-fixup -C link-arg=-Wl,-allow-multiple-definition" \
           cargo build --release --target i686-pc-windows-gnu -p omsi-plugin --bin omsi-plugin-host
 
       - name: Upload artifact
